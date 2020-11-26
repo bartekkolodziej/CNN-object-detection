@@ -1,7 +1,7 @@
 # Głębokie uczenie maszynowe i sieci konwolucyjne - znajdowanie na obrazie konkretnego obiektu
 
 
-W niniejszym sprawdozdaniu zostanie przedstawiony sposób działania głębokiego uczenia maszynowego w połączeniu z sieciami konwolucyjnymi. Przyjrzyżmy się po krótce całemu obszarowi sztucznej inteligencji, uczenia maszynowego, stosowanych technik i podejść oraz znanych zastosowań i ograniczeń. Przy użyciu dostępnych dzisiaj narzędzi zaimplementujemy w prosty sposób program rozpoznający obiekty na obrazach przy użyciu wspomnianych technik. Wyjaśnimy (skrótowo i po części) jak aplikacja np. taka jak Google Photos umożliwia wyszukiwanie zdjęć na podstawie tego, co jest na obrazie:
+W niniejszym sprawdozdaniu zostanie przedstawiony sposób działania głębokiego uczenia maszynowego w połączeniu z sieciami konwolucyjnymi. Przyjrzyżmy się po krótce całemu obszarowi sztucznej inteligencji, uczenia maszynowego, stosowanych technik i podejść oraz znanych zastosowań i ograniczeń. Przy użyciu dostępnych dzisiaj narzędzi "nakarmimy" i zaimplementujemy w prosty sposób program rozpoznający obiekty (ptaki w naszym przypadku) na obrazach przy użyciu wspomnianych technik. Wyjaśnimy, skrótowo i po części, jak aplikacja np. taka jak Google Photos umożliwia wyszukiwanie zdjęć na podstawie tego, co jest na obrazie:
 
 
 |  Google umożliwia teraz wyszukiwanie własnych zdjęć według opisu - nawet jeśli nie są one otagowane  |
@@ -50,13 +50,71 @@ Struktury matematyczne i ich programowe lub sprzętowych modele, realizujące ob
 |:-------------------------:|
  |![](https://upload.wikimedia.org/wikipedia/commons/3/3c/Neuralnetwork.png) |
  
- ### Konwolucyjna sieć neuronowa
- W uczeniu głębokim konwolucyjna sieć neuronowa (CNN lub ConvNet) to klasa głębokich sieci neuronowych, najczęściej stosowana do analizy obrazów. Nazwa „konwolucyjna sieć neuronowa” wskazuje, że sieć wykorzystuje operację matematyczną zwaną splotem. Sieci splotowe to wyspecjalizowany typ sieci neuronowych, które używają splotu zamiast ogólnego mnożenia macierzy w co najmniej jednej z warstw.
- | Typowa architektura CNN  | 
+## Konwolucyjna sieć neuronowa
+ 
+| Typowa architektura CNN  | 
 |:---:|
- |![](https://upload.wikimedia.org/wikipedia/commons/6/63/Typical_cnn.png) |
+|![](https://miro.medium.com/max/1250/1*vkQ0hXDaQv57sALXAJquxA.jpeg) |
  
  
+ Konwolucyjna sieć neuronowa (ConvNet / CNN) to algorytm głębokiego uczenia się, który może pobierać obraz wejściowy, przypisywać znaczenie (możliwe do nauczenia się wagi i odchylenia) różnym aspektom / obiektom obrazu i być w stanie odróżnić jeden od drugiego. Przetwarzanie wstępne wymagane w ConvNet jest znacznie niższe w porównaniu z innymi algorytmami klasyfikacji. Podczas gdy w prymitywnych metodach filtry są tworzone ręcznie, po odpowiednim przeszkoleniu CNN mają zdolność uczenia się tych filtrów / charakterystyk.
+
+Architektura CNN jest analogiczna do struktury połączeń neuronów w ludzkim mózgu i została zainspirowana organizacją rdzenia wzrokowego. Poszczególne neurony reagują na bodźce tylko w ograniczonym obszarze pola widzenia, znanym jako pole odbioru. Zbiór takich pól nakłada się na cały obszar widzenia.
+
+
+### 1. Obraz wejściowy
+Obraz to nic innego jak macierz wartości pikseli, hmm? Dlaczego więc nie spłaszczyć obrazu (np. Matrycy 3x3 do wektora 9x1) i nie przesłać go do perceptronu wielopoziomowego w celu klasyfikacji? Uh .. nie bardzo.
+
+
+ | Spłaszczenie macierzy obrazu 3x3 do wektora 9x1 | 
+|:---:|
+ |![](https://miro.medium.com/max/531/1*GLQjM9k0gZ14nYF0XmkRWQ.png) |
+
+
+W przypadku skrajnie podstawowych obrazów binarnych metoda może wykazywać średnią precyzję. Ale miałaby niewielką lub żadną dokładność, jeśli chodzi o złożone obrazy z zależnościami pomiędzy pikselami.
+
+CNN jest w stanie **skutecznie uchwycić zależności przestrzenne i czasowe** na obrazie poprzez zastosowanie odpowiednich filtrów. Architektura takiej sieci zapewnia lepsze dopasowanie do zbioru danych obrazu ze względu na zmniejszenie liczby zaangażowanych parametrów i możliwość ponownego wykorzystania wag. Innymi słowy, sieć można wyszkolić, aby lepiej rozumiała złożoność obrazu.
+
+| Mamy obraz RGB, który został oddzielony trzema płaszczyznami kolorów - czerwoną, zieloną i niebieską. Istnieje wiele takich przestrzeni kolorów, w których istnieją obrazy - skala szarości, RGB, HSV, CMYK itp.  | 
+|:---:|
+|![](https://miro.medium.com/max/625/1*15yDvGKV47a0nkf5qLKOOQ.png) |
+
+Można sobie wyobrazić, jak bardzo są to rzeczy wymagające dużej mocy obliczeniowej, gdy obrazy osiągną wymiary, powiedzmy 8K (7680 × 4320). Rolą CNN jest zredukowanie obrazów do postaci, która jest łatwiejsza do przetworzenia, bez utraty informacji, które są kluczowe dla uzyskania dobrej prognozy. Jest to ważne, gdy mamy zaprojektować architekturę, która jest skalowalna do ogromnych zbiorów danych.
+
+
+### 2. Warstwa konwolucyjna - The Kernel (jądro)
+
+Wymiary obrazu = 5 (wysokość) x 5 (szerokość) x 1 (liczba kanałów, np. RGB)
+
+| Przekształcanie obrazu 5x5x1 z jądrem 3x3x1 w celu uzyskania skręconej funkcji 3x3x1| 
+|:---:|
+|![](https://miro.medium.com/max/625/1*GcI7G-JLAQiEoCON7xFbhg.gif) |
+
+W powyższej animacji sekcja zielona odwzorowywuje nasz **obraz wejściowy 5x5x1.** Element odpowiedzialny za wykonanie operacji pierwszej części warstwy konwolucyjnej nazywany **jest jądrem / filtrem, K**, reprezentowany kolorem żółtym. W tym przypadku **K to macierz 3x3x1.**
+
+```
+Kernel/Filter, K = 
+1  0  1
+0  1  0
+1  0  1
+```
+
+Jądro przesuwa się 9 razy z powodu **długości kroku = 1 (bez kroku)**, za każdym razem wykonując operację **mnożenia macierzy między K a częścią P obrazu**, nad którym jądro się przesuwa
+
+| Przesuwanie się jądra| 
+|:---:|
+|![](https://miro.medium.com/max/408/1*NsiYxt8tPDQyjyH3C08PVA@2x.png) |
+
+Filtr przesuwa się w prawo z określoną wartością kroku, aż przeanalizuje całą szerokość. Przechodząc dalej, przeskakuje w dół do początku (do lewej) obrazu z tą samą wartością kroku i powtarza ten proces aż do przejścia całego obrazu.
+
+
+
+|Operacja konwolucji na macierzy obrazu MxNx3 z jądrem 3x3x3| 
+|:---:|
+|![](https://miro.medium.com/max/875/1*ciDgQEjViWLnCbmX-EeSrA.gif) |
+
+
+
 # Rozpoznawanie obrazów
 ### Na początek proste rozpoznawanie pisma odręcznego (liczby osiem)
 W ML do uczenia sieci neuronowych zazwyczaj używamy liczb. Ale teraz chcemy przetwarzać obrazy przy użyciu tychże sieci. Jak wprowadzić obrazy do sieci neuronowej zamiast liczb? Sieć neuronowa przyjmuje liczby jako dane wejściowe. Dla komputera obraz jest w rzeczywistości tylko siatką liczb, które reprezentują, jak ciemny jest każdy piksel
@@ -122,8 +180,8 @@ Więcej danych niestety utrudnia rozwiązywanie problemu przez sieć neuronową,
  
  ## Konwolucja
  
- >Dla wygody (dostępność materiałów zaczerpniętych z artykułu) pojęcie konwolucyjnych sieci neuronowych zostanie przedstawione na przykładzie zdjęcia dziecka. 
- 
+ >Dla wygody (dostępność materiałów zaczerpniętych z artykułu) pojęcie konwolucyjnych sieci neuronowych, w tym rozdziale, zostanie przedstawione na przykładzie zdjęcia dziecka. 
+ >
  Zmienimy naszą sieć tak by poprawnie klasyfikowała obraz. Oraz pokażemy jak badać jej skuteczność. Musimy dać naszej sieci neuronowej zrozumienie niezmienności translacji - „8” to „8” (lub inny szukany obiekt) bez względu na to, gdzie na obrazku się pojawia. Zrobimy to za pomocą procesu zwanego Konwolucją
 
 ### Jak działa konwolucja
@@ -188,7 +246,7 @@ Do tej pory zredukowaliśmy gigantyczny obraz do dość małej tablicy. Ta tabli
  Nasz potok przetwarzania obrazu składa się z szeregu etapów: konwolucji, max poolingu i wreszcie w pełni połączonej sieci.
 Podczas rozwiązywania problemów te kroki można łączyć i układać dowolną liczbę razy! Możma mieć dwie, trzy lub nawet dziesięć warstw knwolucji. Można wprowadzić max pooling w dowolnym miejscu, w którym checmy zmniejszyć rozmiar danych.
 Podstawowym pomysłem jest rozpoczęcie od dużego obrazu i ciągłe zmniejszanie go, krok po kroku, aż w końcu uzyskamy pojedynczy wynik. Im więcej jest kroków konwolucyjnych, tym bardziej skomplikowane funkcje będzie w stanie rozpoznać Twoja sieć.
-Na przykład, pierwszy krok konwolucji może nauczyć się rozpoznawać ostre krawędzie, drugi krok  może rozpoznawać dzioby na podstawie wiedzy o ostrych krawędziach, trzeci krok może rozpoznawać całe ptaki na podstawie wiedzy o dziobach itp.
+Na przykład, przy wykrywaniu ptaków na zdjęciach, pierwszy krok konwolucji może nauczyć się rozpoznawać ostre krawędzie, drugi krok  może rozpoznawać dzioby na podstawie wiedzy o ostrych krawędziach, trzeci krok może rozpoznawać całe ptaki na podstawie wiedzy o dziobach itp.
 
  |Oto jak wygląda bardziej realistyczna głęboka sieć konwolucyjna| 
 |:---:|
