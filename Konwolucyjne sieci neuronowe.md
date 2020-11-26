@@ -125,7 +125,26 @@ Podobnie jak warstwa konwolucyjna, Pooling layer jest odpowiedzialna za zmniejsz
 |:---:|
 |![](https://miro.medium.com/max/495/1*uoWYsCV5vBU8SHFPAPao-w.gif) |
 
-Istnieją dwa rodzaje operacji Polling'u: Max pooling i Average Pooling. Max Pooling zwraca maksymalną wartość z części obrazu "pokrytej" przez jądro (kernel). Z drugiej strony, Average Pooling zwraca średnią wszystkich wartości z części obrazu "pokrytej" przez jądro.
+Istnieje kilka rodzaji operacji Polling'u np. Max pooling i Average Pooling. Max Pooling zwraca maksymalną wartość z części obrazu "pokrytej" przez jądro (kernel). Z drugiej strony, Average Pooling zwraca średnią wszystkich wartości z części obrazu "pokrytej" przez jądro. Najczęściej używany jest Max polling. Dzieli on obraz wejściowy na zestaw nienakładających się prostokątów i, dla każdego takiego podregionu, wyprowadza maksimum.
+
+|(krok/slide = 2, filter 2x2) Max pooling wyciąga największą wartość z kwadratu 2x2 pokrywającage dany obszar w każdym kroku tj. (20, 30, 112, 37). Averge pooling wyciąga średnią wartość w każdeym kroku tj. (13, 8, 79, 20)| 
+|:---:|
+|![](https://miro.medium.com/max/625/1*KQIEqhxzICU7thjaQBfPBQ.png)|
+
+Warstwa konwolucyjna i warstwa Poolingu tworzą razem i-tą warstwę CNN. W zależności od złożoności obrazów, liczba takich warstw może zostać zwiększona, aby jeszcze bardziej uchwycić szczegóły, ale kosztem większej mocy obliczeniowej.
+Po przejściu przez powyższy proces z powodzeniem umożliwiliśmy modelowi zrozumienie cech obrazu wejściowego. Przechodząc dalej, zamierzamy spłaszczyć końcowy output i przesłać go do zwykłej sieci neuronowej w celu klasyfikacji.
+
+### 4. Klasyfikacja - w pełni połączona warstwa (Fully Connected Layer)
+Dodanie warstwy w pełni połączonej jest (zwykle) tanim sposobem uczenia się nieliniowych kombinacji cech wysokiego poziomu, reprezentowanych przez dane wyjściowe warstwy konwolucyjnej.
+
+
+
+|FC layer| 
+|:---:|
+|![](https://miro.medium.com/max/875/1*kToStLowjokojIQ7pY2ynQ.jpeg)|
+
+
+Teraz, gdy przekonwertowaliśmy nasz obraz wejściowy do odpowiedniej postaci dla naszego wielopoziomowego perceptronu, spłaszczamy obraz do wektora kolumnowego. Spłaszczony output jest podawany do sieci neuronowej ze sprzężeniem zwrotnym i propagacją wsteczną stosowaną w każdej iteracji treningu. Na przestrzeni szeregu epok model jest w stanie rozróżnić cechy dominujące i pewne cechy niskiego poziomu w obrazach a następnie sklasyfikować je za pomocą techniki klasyfikacji Softmax.
 
 
 # Rozpoznawanie obrazów
@@ -190,14 +209,13 @@ Więcej danych niestety utrudnia rozwiązywanie problemu przez sieć neuronową,
  |![](https://miro.medium.com/max/875/1*wfmpsoFqWKC7VadjTJxwnQ.png) |
  
  W ten sposób dochodzimy do utworzenie głebokiej sieci neuronowej. Wraz z zastosowaniem kart graficznych uczenie tak skomplikowanych sieci stało o wiele szybsze. Mimo to istnieje rozwiązanie, które pozwala w inteligentny sposób ominąć ten problem i znacznie ułatwić działanie tego typu sieci.
- 
- ## Konwolucja
- 
- >Dla wygody (dostępność materiałów zaczerpniętych z artykułu) pojęcie konwolucyjnych sieci neuronowych, w tym rozdziale, zostanie przedstawione na przykładzie zdjęcia dziecka. 
- >
- Zmienimy naszą sieć tak by poprawnie klasyfikowała obraz. Oraz pokażemy jak badać jej skuteczność. Musimy dać naszej sieci neuronowej zrozumienie niezmienności translacji - „8” to „8” (lub inny szukany obiekt) bez względu na to, gdzie na obrazku się pojawia. Zrobimy to za pomocą procesu zwanego Konwolucją
 
-### Jak działa konwolucja
+
+
+## Konwolucja - jak działa (uproszczony przykład)
+ >Dla wygody (dostępność materiałów zaczerpniętych z artykułu) użycie konwolucyjnych sieci neuronowych, w tym rozdziale, zostanie przedstawione na przykładzie zdjęcia dziecka. 
+ >
+ 
 Zamiast dostarczać całe obrazy do naszej sieci neuronowej jako jedną siatkę liczb, wykorzystamy fakt, że obiekt jest taki sam bez względu na to, gdzie się pojawia na obrazie.
 
 ##### Krok 1: Dzielimy obraz na nakładające się kafelki
@@ -268,20 +286,30 @@ Na przykład, przy wykrywaniu ptaków na zdjęciach, pierwszy krok konwolucji mo
 
 W tym przypadku uruchamiają obraz o wymiarach 224 x 224 pikseli, stosują konwolucje i dwukrotnie max pooling, stosują konwolucje jeszcze 3 razy, stosują maxpooling, a następnie mają dwie w pełni połączone warstwy. Efekt końcowy jest taki, że obraz jest klasyfikowany do jednej z 1000 kategorii!
 
-
-### 0 Budowa właściwej sieci  (// w tym rozdziale trzeba coś mądrego napisać)
-
 Skąd wiadomo, które kroki należy połączyć, aby klasyfikator obrazu działał jak najlepiej?
 Trzeba na to odpowiedzieć, wykonując wiele eksperymentów i testów. Być może będzie trzeba wytrenować 100 sieci, zanim znajdziemy optymalną strukturę i parametry dla rozwiązywanego problemu. Uczenie maszynowe wymaga wielu prób i błędów.
 
-## Tworzenie klasyfikatora ptaków
 
-#### 1. pataki był w arytkule - trzba to zaznaczyć. bo będziemy robili to co w artykule. cały sens CNN jest wytłumaczony wyżej więc nie ma sensu wymyślać swoich modeli i szukać baz danych
 
- - to czy wszystko powyżej czyli: wprowadzenie, ML, Deep learing, CNN jest dobrze wytłumaczone to mam do ciebie prośbe jakbyś rzucić okiem co ja tam najebany napisałem - ja to jeszcze przejrze ty tylko zerknij tak bardziej pod względem technicznym - czy nie pierdole głupot (no niestety jestem w stanie jakium jestem i to jest constant - przepraszam bro naprawdę)
+# TODO
+> info brałem z tego co podlinkowałeś https://medium.com/@ageitgey/machine-learning-is-fun-part-3-deep-learning-and-convolutional-neural-networks-f40359318721
+>
+> z tego trochę https://en.wikipedia.org/wiki/Convolutional_neural_network#Building_blocks
+>
 
-# 2. reszta artykułu jest do dokończenia - jakieś 1h pracy z tłumaczeniem (?chyba?)
-# 3. trzeba jeszcze zredagować tekst
+> i z tego trochę https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53
+
+# 1. Trzeba sprawdzić czy to co napisałem jest w całości potrzebne. 
+ - Część teoretyczna czyli wprowadadzenie i wytłumaczenia terminów: Uczenie maszynowe, Uczenie głębokie, Sieci neuronowe, CNN (tutaj patrzyłem na wikipedie i inne artykuły) 
+ - Następnie jest "Rozpoznawanie obrazów" na podstawie pisma odręcznego (to jest prosto z artykułu)
+ - "Konwolucja - jak działa (uproszczony przykład)" - gwóźdź programu (to też prosto z artykułu)
+ - Trzeba dokończyć tłumaczenie artykułu - od tego rozdziału "Building our Bird Classifier" do "Testing our Network"
+ 
+
+# 2. Trzeba sprawdzić czy to wszystko powyżej ma sens (albo nie, może mr. Bielecki tego nie będzie czytać, bo mi by się nie chciało)
+
+
+# 3. trzeba  zredagować tekst
 - poprawić błędy gramatyczne, literówki, 
 - zmienić styl językowy na taki bardziej typu sprawozdanie, nie artykułowy 
     - wyjebać teksty takie jak "to bardzo proste musisz tylko coś tam, heh ML is funny bruh") bo mr. Bielecki się może obrazić. 
@@ -290,22 +318,13 @@ Trzeba na to odpowiedzieć, wykonując wiele eksperymentów i testów. Być moż
     - albo machine learning - uczenia maszynowe
     - tak żeby była spójność językowa - albo skróty, albo po polsku albo po angielsku
 
-# 4. jeszcze jakiś code snippet trzeba dodać (jest na dole artykułu)
-# 5. do tego chyba jeszcze testy (tzn. jak się to testuje - ale to też copy paste bo na dole artykułu jest)
-# 6. ja chciałbym to przerzucić na web app, tak by mr. Bielecki mógł sobie kilknąć link, zobaczyć sprawozdanie/artykuł (w naszej wersji) razem z imlpementacją. a obok bym jebnął skrypt tak żeby sobie mógł sprawdzić czy to działa i żeby mu wypluwało jakieś dane (jak się da) bo: 
- - mam to napisane w .md ale zapisywanie do pdf nie wychodzi (i nie wiem jak to wszystko mr. Bieleckiemu pokazać - w jakim formacie on to chciał)
-    - pisałem to na dillinger.io - chyba nie najepszy wybór
-    - za to ładnie mogę pobrać Styled HTML - więc osadzenie tam skryptu powinno być łatwe. i wtedy mamy jeden plik .html jako static web page (chyba, żę import pythona nie pozwala - nie znam się za bardzo)
- - może wtedy mr. Bielecki trochę łaskawszym okiem spojrzy jak dorzucimy jakiś interfejs webowy
- 
-# 7. nie wiem do kiedy deadline ale taką apkę to chyba w 2 minuty (bo mamy plik .html w którym jest wszystko) i albo dorobić jakiś kod w .js i na githubpages albo tak jak mówiłeś o heroku a jak nie to jebać :D
- 
-# 8. chyba większość podpunktów załatwie sam tylko trochę czasu potrzebuje (i motywacji xD - ale zapierdalam dzień i noc), z tym web app - to twoja decyzja czy robimy czy tylko oddajemy sprawozdanie w formie: 
--   pdf
--   Styled Html - i podis otwórz sobie to zobaczysz zioooom
--   gdzieś to hostujemy jako jakąś stronke 
--   twoje pomysły
 
-> jak to przeczytasz to daj znać - ja poprawię/zrobię wszystko co trzeba. Ty tylko zadecyduj co trzeba. Fajnie jakbyś zerknął na rzeczy z pkt 6,7,8.ewentualnie pkt 1 może 3
+# 4. trzeba to ułożyć w jakiejś sensownej kolejności. Albo może tak zostać - whatever
+
+
+
+ 
+
+
 
 
