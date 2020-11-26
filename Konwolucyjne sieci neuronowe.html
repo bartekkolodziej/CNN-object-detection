@@ -104,12 +104,12 @@
     </tbody>
 </table>
 <p class="has-line-data" data-line-start="81" data-line-end="82">Można sobie wyobrazić, jak bardzo są to rzeczy wymagające dużej mocy obliczeniowej, gdy obrazy osiągną wymiary, powiedzmy 8K (7680 × 4320). Rolą CNN jest zredukowanie obrazów do postaci, która jest łatwiejsza do przetworzenia, bez utraty informacji, które są kluczowe dla uzyskania dobrej prognozy. Jest to ważne, gdy mamy zaprojektować architekturę, która jest skalowalna do ogromnych zbiorów danych.</p>
-<h3 class="code-line" data-line-start=84 data-line-end=85><a id="2_Warstwa_konwolucyjna__The_Kernel_jdro_84"></a>2. Warstwa konwolucyjna - The Kernel (jądro)</h3>
+<h3 class="code-line" data-line-start=84 data-line-end=85><a id="2_Warstwa_konwolucyjna_The_Kernel_jdro_84"></a>2. Warstwa konwolucyjna, The Kernel (jądro)</h3>
 <p class="has-line-data" data-line-start="86" data-line-end="87">Wymiary obrazu = 5 (wysokość) x 5 (szerokość) x 1 (liczba kanałów, np. RGB)</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
-        <th style="text-align:center">Przekształcanie obrazu 5x5x1 z jądrem 3x3x1 w celu uzyskania skręconej funkcji 3x3x1</th>
+        <th style="text-align:center">Przekształcanie obrazu 5x5x1 z jądrem 3x3x1 w celu uzyskania funkcji konwolucyjnej 3x3x1</th>
     </tr>
     </thead>
     <tbody>
@@ -118,26 +118,14 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="92" data-line-end="93">W powyższej animacji sekcja zielona odwzorowywuje nasz <strong>obraz wejściowy 5x5x1.</strong> Element odpowiedzialny za wykonanie operacji pierwszej części warstwy konwolucyjnej nazywany <strong>jest jądrem / filtrem, K</strong>, reprezentowany kolorem żółtym. W tym przypadku <strong>K to macierz 3x3x1.</strong></p>
+<p class="has-line-data" data-line-start="92" data-line-end="93">W powyższej animacji sekcja zielona odwzorowywuje nasz <strong>obraz wejściowy 5x5x1.</strong> Element odpowiedzialny za wykonanie operacji mnożenia nazywany jest <strong>jądrem / filtrem, K</strong>, reprezentowany kolorem żółtym. W tym przypadku <strong>K to macierz 3x3x1.</strong></p>
 <pre><code class="has-line-data" data-line-start="95" data-line-end="100">Kernel/Filter, K =
 1  0  1
 0  1  0
 1  0  1
 </code></pre>
-<p class="has-line-data" data-line-start="101" data-line-end="102">Jądro przesuwa się 9 razy z powodu <strong>długości kroku = 1 (bez kroku)</strong>, za każdym razem wykonując operację <strong>mnożenia macierzy między K a częścią P obrazu</strong>, nad którym jądro się przesuwa</p>
-<table class="table table-striped table-bordered">
-    <thead>
-    <tr>
-        <th style="text-align:center">Przesuwanie się jądra</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td style="text-align:center"><img src="https://miro.medium.com/max/408/1*NsiYxt8tPDQyjyH3C08PVA@2x.png" alt=""></td>
-    </tr>
-    </tbody>
-</table>
-<p class="has-line-data" data-line-start="107" data-line-end="108">Filtr przesuwa się w prawo z określoną wartością kroku, aż przeanalizuje całą szerokość. Przechodząc dalej, przeskakuje w dół do początku (do lewej) obrazu z tą samą wartością kroku i powtarza ten proces aż do przejścia całego obrazu.</p>
+<p class="has-line-data" data-line-start="101" data-line-end="103">Jądro przesuwa się 9 razy z powodu <strong>długości kroku = 1 (bez kroku)</strong>, za każdym razem wykonując operację <strong>mnożenia macierzy między K a częścią obrazu, nad którym jądro się przesuwa (0 lub 1)</strong>. Wynikiem operacji jest suma wykonanych mnożeń (w powyższym przypadku dla każdego max = 5, min = 0).<br>
+    Filtr przesuwa się w prawo z określoną wartością kroku, aż przeanalizuje całą szerokość. Przechodząc dalej, przeskakuje w dół do początku (do lewej) obrazu z tą samą wartością kroku i powtarza ten proces aż do przejścia całego obrazu.</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -150,9 +138,37 @@
     </tr>
     </tbody>
 </table>
-<h1 class="code-line" data-line-start=117 data-line-end=118><a id="Rozpoznawanie_obrazw_117"></a>Rozpoznawanie obrazów</h1>
-<h3 class="code-line" data-line-start=118 data-line-end=119><a id="Na_pocztek_proste_rozpoznawanie_pisma_odrcznego_liczby_osiem_118"></a>Na początek proste rozpoznawanie pisma odręcznego (liczby osiem)</h3>
-<p class="has-line-data" data-line-start="119" data-line-end="120">W ML do uczenia sieci neuronowych zazwyczaj używamy liczb. Ale teraz chcemy przetwarzać obrazy przy użyciu tychże sieci. Jak wprowadzić obrazy do sieci neuronowej zamiast liczb? Sieć neuronowa przyjmuje liczby jako dane wejściowe. Dla komputera obraz jest w rzeczywistości tylko siatką liczb, które reprezentują, jak ciemny jest każdy piksel</p>
+<p class="has-line-data" data-line-start="110" data-line-end="111">Celem operacji konwolucji jest wyodrębnienie cech wysokiego poziomu, takich jak krawędzie, z obrazu wejściowego. Sieci konwolucyjne nie muszą być ograniczone tylko do jednej warstwy. Tradycyjnie, pierwsza warstwa jest odpowiedzialna za przechwytywanie cech niskiego poziomu, takich jak krawędzie, kolor, orientacja gradientu itp. Dzięki dodawaniu warstw architektura dostosowuje się również do funkcji wysokiego poziomu, dając nam sieć, która ma pełnowartościowe zrozumienie obrazów w zbiorze danych.</p>
+<table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th style="text-align:center">Operacja konwolucji z długością kroku = 2</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td style="text-align:center"><img src="https://miro.medium.com/max/494/1*1VJDP6qDY9-ExTuQVEOlVg.gif" alt=""></td>
+    </tr>
+    </tbody>
+</table>
+<h3 class="code-line" data-line-start=118 data-line-end=119><a id="3_Pooling_Layer_118"></a>3. Pooling Layer</h3>
+<p class="has-line-data" data-line-start="120" data-line-end="121">Podobnie jak warstwa konwolucyjna, Pooling layer jest odpowiedzialna za zmniejszenie rozmiaru przestrzennego elementu konwolucyjnego. Ma to na celu zmniejszenie mocy obliczeniowej wymaganej do przetwarzania danych poprzez redukcję wymiarowości. Ponadto jest przydatny do wyodrębniania dominujących cech, które są niezmienne rotacyjnie i pozycyjnie, a tym samym podtrzymuje proces efektywnego uczenia modelu.</p>
+<table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th style="text-align:center">Pooling 3x3 na funkcji splotu 5x5</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td style="text-align:center"><img src="https://miro.medium.com/max/495/1*uoWYsCV5vBU8SHFPAPao-w.gif" alt=""></td>
+    </tr>
+    </tbody>
+</table>
+<p class="has-line-data" data-line-start="127" data-line-end="128">Istnieją dwa rodzaje operacji Polling’u: Max pooling i Average Pooling. Max Pooling zwraca maksymalną wartość z części obrazu “pokrytej” przez jądro (kernel). Z drugiej strony, Average Pooling zwraca średnią wszystkich wartości z części obrazu “pokrytej” przez jądro.</p>
+<h1 class="code-line" data-line-start=130 data-line-end=131><a id="Rozpoznawanie_obrazw_130"></a>Rozpoznawanie obrazów</h1>
+<h3 class="code-line" data-line-start=131 data-line-end=132><a id="Na_pocztek_proste_rozpoznawanie_pisma_odrcznego_liczby_osiem_131"></a>Na początek proste rozpoznawanie pisma odręcznego (liczby osiem)</h3>
+<p class="has-line-data" data-line-start="132" data-line-end="133">W ML do uczenia sieci neuronowych zazwyczaj używamy liczb. Ale teraz chcemy przetwarzać obrazy przy użyciu tychże sieci. Jak wprowadzić obrazy do sieci neuronowej zamiast liczb? Sieć neuronowa przyjmuje liczby jako dane wejściowe. Dla komputera obraz jest w rzeczywistości tylko siatką liczb, które reprezentują, jak ciemny jest każdy piksel</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -180,7 +196,7 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="132" data-line-end="135">Nasza sieć neuronowa ma teraz również dwa wyjścia (zamiast tylko jednego). Pierwszy wynik będzie przewidywał prawdopodobieństwo, że obraz jest „8”, a drugi wynik będzie przewidywał prawdopodobieństwo, że obraz nie jest „8”. Mając osobne dane wyjściowe dla każdego typu obiektu, który chcemy rozpoznać, możemy użyć sieci neuronowej do klasyfikacji obiektów w grupy.<br>
+<p class="has-line-data" data-line-start="145" data-line-end="148">Nasza sieć neuronowa ma teraz również dwa wyjścia (zamiast tylko jednego). Pierwszy wynik będzie przewidywał prawdopodobieństwo, że obraz jest „8”, a drugi wynik będzie przewidywał prawdopodobieństwo, że obraz nie jest „8”. Mając osobne dane wyjściowe dla każdego typu obiektu, który chcemy rozpoznać, możemy użyć sieci neuronowej do klasyfikacji obiektów w grupy.<br>
     Każdy nowoczesny komputer może obsłużyć taką sieć neuronową z kilkuset węzłami w ułamek sekundy.<br>
     Teraz pozostaje tylko wytrenować sieć neuronową za pomocą obrazów „8”, i tych, które nie są „8”, aby nauczyła się je rozróżniać. Kiedy wprowadzimy „8”, “powiemy” naszej sieci, że prawdopodobieństwo, że obraz jest „8” to 100%, a prawdopodobieństwo, że nie jest to „8”, wynosi 0%.</p>
 <table class="table table-striped table-bordered">
@@ -195,9 +211,9 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="140" data-line-end="141">Taką sieć neuronową możemy wytrenować w kilka minut na nowoczesnym laptopie. Po zakończeniu będziemy mieć sieć neuronową, która potrafi rozpoznawać obrazy przedstawiające „8” z całkiem dużą dokładnością.</p>
-<h4 class="code-line" data-line-start=142 data-line-end=143><a id="Tunnel_Vision_142"></a>Tunnel Vision</h4>
-<p class="has-line-data" data-line-start="143" data-line-end="144">Zwykłe podanie pikseli do sieci neuronowej pomogło zbudować rozpoznawanie obrazu. Chociaż, to nie jest takie proste.</p>
+<p class="has-line-data" data-line-start="153" data-line-end="154">Taką sieć neuronową możemy wytrenować w kilka minut na nowoczesnym laptopie. Po zakończeniu będziemy mieć sieć neuronową, która potrafi rozpoznawać obrazy przedstawiające „8” z całkiem dużą dokładnością.</p>
+<h4 class="code-line" data-line-start=155 data-line-end=156><a id="Tunnel_Vision_155"></a>Tunnel Vision</h4>
+<p class="has-line-data" data-line-start="156" data-line-end="157">Zwykłe podanie pikseli do sieci neuronowej pomogło zbudować rozpoznawanie obrazu. Chociaż, to nie jest takie proste.</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -210,7 +226,7 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="150" data-line-end="151">Zła wiadomość: nasza sieć rozpoznawania „8” całkowicie nie działa, gdy litera nie jest idealnie wyśrodkowana na obrazie</p>
+<p class="has-line-data" data-line-start="163" data-line-end="164">Zła wiadomość: nasza sieć rozpoznawania „8” całkowicie nie działa, gdy litera nie jest idealnie wyśrodkowana na obrazie</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -223,11 +239,11 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="157" data-line-end="158">Dzieje się tak, ponieważ nasza sieć nauczyła się tylko wzoru doskonale wyśrodkowanej „ósemki”. Nie ma absolutnie żadnego pojęcia, czym jest poza centrum „ósemka”. Zna dokładnie jeden wzór i tylko jeden wzór. To nie jest zbyt przydatne. Musimy więc dowiedzieć się, jak sprawić, by nasza sieć neuronowa działała w przypadkach, gdy „8” nie jest idealnie wyśrodkowana.</p>
-<h5 class="code-line" data-line-start=159 data-line-end=160><a id="Pomys_1_Wyszukiwanie_za_pomoc_Sliding_Window_159"></a>Pomysł 1: Wyszukiwanie za pomocą “Sliding Window”</h5>
-<p class="has-line-data" data-line-start="160" data-line-end="161">Możemy po prostu przeskanować cały obraz w poszukiwaniu możliwych „8” w mniejszych sekcjach, po jednej sekcji na raz, aż znajdziemy jedną. To rozwiązanie typu “brute force”. Działa dobrze w niektórych ograniczonych przypadkach, ale jest naprawdę nieefektywny. Trzeba nieustannie sprawdzać ten sam obraz, szukając obiektów o różnych rozmiarach. Można zrobić to lepiej.</p>
-<h5 class="code-line" data-line-start=162 data-line-end=163><a id="Pomys__2_Wicej_danych_i_gboka_sie_neuronowa_162"></a>Pomysł 2: Więcej danych i głęboka sieć neuronowa</h5>
-<p class="has-line-data" data-line-start="163" data-line-end="164">Kiedy trenowaliśmy naszą sieć, pokazaliśmy tylko „8”, które były idealnie wyśrodkowane. Co jeśli wytrenujemy go z większą ilością danych, w tym z „8” we wszystkich różnych pozycjach i rozmiarach na całym obrazie? Nie trzeba nawet zbierać nowych danych treningowych. Można po prostu napisać skrypt, który wygeneruje nowe obrazy z „8” we wszystkich rodzajach różnych pozycji obrazu</p>
+<p class="has-line-data" data-line-start="170" data-line-end="171">Dzieje się tak, ponieważ nasza sieć nauczyła się tylko wzoru doskonale wyśrodkowanej „ósemki”. Nie ma absolutnie żadnego pojęcia, czym jest poza centrum „ósemka”. Zna dokładnie jeden wzór i tylko jeden wzór. To nie jest zbyt przydatne. Musimy więc dowiedzieć się, jak sprawić, by nasza sieć neuronowa działała w przypadkach, gdy „8” nie jest idealnie wyśrodkowana.</p>
+<h5 class="code-line" data-line-start=172 data-line-end=173><a id="Pomys_1_Wyszukiwanie_za_pomoc_Sliding_Window_172"></a>Pomysł 1: Wyszukiwanie za pomocą “Sliding Window”</h5>
+<p class="has-line-data" data-line-start="173" data-line-end="174">Możemy po prostu przeskanować cały obraz w poszukiwaniu możliwych „8” w mniejszych sekcjach, po jednej sekcji na raz, aż znajdziemy jedną. To rozwiązanie typu “brute force”. Działa dobrze w niektórych ograniczonych przypadkach, ale jest naprawdę nieefektywny. Trzeba nieustannie sprawdzać ten sam obraz, szukając obiektów o różnych rozmiarach. Można zrobić to lepiej.</p>
+<h5 class="code-line" data-line-start=175 data-line-end=176><a id="Pomys__2_Wicej_danych_i_gboka_sie_neuronowa_175"></a>Pomysł 2: Więcej danych i głęboka sieć neuronowa</h5>
+<p class="has-line-data" data-line-start="176" data-line-end="177">Kiedy trenowaliśmy naszą sieć, pokazaliśmy tylko „8”, które były idealnie wyśrodkowane. Co jeśli wytrenujemy go z większą ilością danych, w tym z „8” we wszystkich różnych pozycjach i rozmiarach na całym obrazie? Nie trzeba nawet zbierać nowych danych treningowych. Można po prostu napisać skrypt, który wygeneruje nowe obrazy z „8” we wszystkich rodzajach różnych pozycji obrazu</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -240,7 +256,7 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="170" data-line-end="172">Korzystając z tej techniki, można łatwo stworzyć nieskończoną ilość danych szkoleniowych.<br>
+<p class="has-line-data" data-line-start="183" data-line-end="185">Korzystając z tej techniki, można łatwo stworzyć nieskończoną ilość danych szkoleniowych.<br>
     Więcej danych niestety utrudnia rozwiązywanie problemu przez sieć neuronową, ale możemy to zrekompensować, zwiększając naszą sieć, a tym samym zwiększając jej zdolność do uczenia się bardziej skomplikowanych wzorców.</p>
 <table class="table table-striped table-bordered">
     <thead>
@@ -254,16 +270,16 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="178" data-line-end="179">W ten sposób dochodzimy do utworzenie głebokiej sieci neuronowej. Wraz z zastosowaniem kart graficznych uczenie tak skomplikowanych sieci stało o wiele szybsze. Mimo to istnieje rozwiązanie, które pozwala w inteligentny sposób ominąć ten problem i znacznie ułatwić działanie tego typu sieci.</p>
-<h2 class="code-line" data-line-start=180 data-line-end=181><a id="Konwolucja_180"></a>Konwolucja</h2>
+<p class="has-line-data" data-line-start="191" data-line-end="192">W ten sposób dochodzimy do utworzenie głebokiej sieci neuronowej. Wraz z zastosowaniem kart graficznych uczenie tak skomplikowanych sieci stało o wiele szybsze. Mimo to istnieje rozwiązanie, które pozwala w inteligentny sposób ominąć ten problem i znacznie ułatwić działanie tego typu sieci.</p>
+<h2 class="code-line" data-line-start=193 data-line-end=194><a id="Konwolucja_193"></a>Konwolucja</h2>
 <blockquote>
-    <p class="has-line-data" data-line-start="182" data-line-end="183">Dla wygody (dostępność materiałów zaczerpniętych z artykułu) pojęcie konwolucyjnych sieci neuronowych, w tym rozdziale, zostanie przedstawione na przykładzie zdjęcia dziecka.</p>
+    <p class="has-line-data" data-line-start="195" data-line-end="196">Dla wygody (dostępność materiałów zaczerpniętych z artykułu) pojęcie konwolucyjnych sieci neuronowych, w tym rozdziale, zostanie przedstawione na przykładzie zdjęcia dziecka.</p>
 </blockquote>
-<p class="has-line-data" data-line-start="184" data-line-end="185">Zmienimy naszą sieć tak by poprawnie klasyfikowała obraz. Oraz pokażemy jak badać jej skuteczność. Musimy dać naszej sieci neuronowej zrozumienie niezmienności translacji - „8” to „8” (lub inny szukany obiekt) bez względu na to, gdzie na obrazku się pojawia. Zrobimy to za pomocą procesu zwanego Konwolucją</p>
-<h3 class="code-line" data-line-start=186 data-line-end=187><a id="Jak_dziaa_konwolucja_186"></a>Jak działa konwolucja</h3>
-<p class="has-line-data" data-line-start="187" data-line-end="188">Zamiast dostarczać całe obrazy do naszej sieci neuronowej jako jedną siatkę liczb, wykorzystamy fakt, że obiekt jest taki sam bez względu na to, gdzie się pojawia na obrazie.</p>
-<h5 class="code-line" data-line-start=189 data-line-end=190><a id="Krok_1_Dzielimy_obraz_na_nakadajce_si_kafelki_189"></a>Krok 1: Dzielimy obraz na nakładające się kafelki</h5>
-<p class="has-line-data" data-line-start="190" data-line-end="191">Podobnie jak w przypadku naszego wyszukiwania “Sliding window” powyżej, przesuńmy okno nad całym oryginalnym obrazem i zapiszmy każdy wynik jako oddzielny, mały kafelek obrazu:</p>
+<p class="has-line-data" data-line-start="197" data-line-end="198">Zmienimy naszą sieć tak by poprawnie klasyfikowała obraz. Oraz pokażemy jak badać jej skuteczność. Musimy dać naszej sieci neuronowej zrozumienie niezmienności translacji - „8” to „8” (lub inny szukany obiekt) bez względu na to, gdzie na obrazku się pojawia. Zrobimy to za pomocą procesu zwanego Konwolucją</p>
+<h3 class="code-line" data-line-start=199 data-line-end=200><a id="Jak_dziaa_konwolucja_199"></a>Jak działa konwolucja</h3>
+<p class="has-line-data" data-line-start="200" data-line-end="201">Zamiast dostarczać całe obrazy do naszej sieci neuronowej jako jedną siatkę liczb, wykorzystamy fakt, że obiekt jest taki sam bez względu na to, gdzie się pojawia na obrazie.</p>
+<h5 class="code-line" data-line-start=202 data-line-end=203><a id="Krok_1_Dzielimy_obraz_na_nakadajce_si_kafelki_202"></a>Krok 1: Dzielimy obraz na nakładające się kafelki</h5>
+<p class="has-line-data" data-line-start="203" data-line-end="204">Podobnie jak w przypadku naszego wyszukiwania “Sliding window” powyżej, przesuńmy okno nad całym oryginalnym obrazem i zapiszmy każdy wynik jako oddzielny, mały kafelek obrazu:</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -276,8 +292,8 @@
     </tr>
     </tbody>
 </table>
-<h5 class="code-line" data-line-start=198 data-line-end=199><a id="Krok_2_Wprowadzamy_kady_kafelek_obrazu_do_maej_sieci_neuronowej_198"></a>Krok 2: Wprowadzamy każdy kafelek obrazu do małej sieci neuronowej</h5>
-<p class="has-line-data" data-line-start="200" data-line-end="201">Wcześniej podawaliśmy pojedynczy obraz do sieci neuronowej, aby sprawdzić, czy jest to „8”. Zrobimy dokładnie to samo, ale zrobimy to dla każdego kafelka obrazu:</p>
+<h5 class="code-line" data-line-start=211 data-line-end=212><a id="Krok_2_Wprowadzamy_kady_kafelek_obrazu_do_maej_sieci_neuronowej_211"></a>Krok 2: Wprowadzamy każdy kafelek obrazu do małej sieci neuronowej</h5>
+<p class="has-line-data" data-line-start="213" data-line-end="214">Wcześniej podawaliśmy pojedynczy obraz do sieci neuronowej, aby sprawdzić, czy jest to „8”. Zrobimy dokładnie to samo, ale zrobimy to dla każdego kafelka obrazu:</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -290,9 +306,9 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="206" data-line-end="207">Jest jednak jedna duża zmiana: zachowamy te same wagi sieci neuronowej dla każdego kafelka na tym samym oryginalnym obrazie. Innymi słowy, każdy kafelek traktujemy jednakowo. Jeśli na jakimś kafelku pojawi się coś interesującego, oznaczymy go jako interesujący.</p>
-<h5 class="code-line" data-line-start=209 data-line-end=210><a id="Krok_3_Zapisz_wyniki_z_kadego_kafelka_w_nowej_tablicy_209"></a>Krok 3: Zapisz wyniki z każdego kafelka w nowej tablicy</h5>
-<p class="has-line-data" data-line-start="211" data-line-end="212">Nie chcemy stracić orientacji w ułożeniu oryginalnych płytek. Tak więc zapisujemy wynik przetwarzania każdego kafelka w siatkę w tym samym układzie, co oryginalny obraz</p>
+<p class="has-line-data" data-line-start="219" data-line-end="220">Jest jednak jedna duża zmiana: zachowamy te same wagi sieci neuronowej dla każdego kafelka na tym samym oryginalnym obrazie. Innymi słowy, każdy kafelek traktujemy jednakowo. Jeśli na jakimś kafelku pojawi się coś interesującego, oznaczymy go jako interesujący.</p>
+<h5 class="code-line" data-line-start=222 data-line-end=223><a id="Krok_3_Zapisz_wyniki_z_kadego_kafelka_w_nowej_tablicy_222"></a>Krok 3: Zapisz wyniki z każdego kafelka w nowej tablicy</h5>
+<p class="has-line-data" data-line-start="224" data-line-end="225">Nie chcemy stracić orientacji w ułożeniu oryginalnych płytek. Tak więc zapisujemy wynik przetwarzania każdego kafelka w siatkę w tym samym układzie, co oryginalny obraz</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -305,15 +321,15 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="217" data-line-end="218">Innymi słowy, zaczęliśmy od dużego obrazu, a skończyliśmy na nieco mniejszej tablicy, która rejestruje, które sekcje naszego oryginalnego obrazu były najbardziej interesujące.</p>
-<h5 class="code-line" data-line-start=219 data-line-end=220><a id="Krok_4_Downsampling_219"></a>Krok 4: Downsampling</h5>
-<p class="has-line-data" data-line-start="221" data-line-end="222">Wynikiem kroku 3 była tablica mapująca, które części oryginalnego obrazu są najbardziej interesujące. Ale ta tablica jest nadal dość duża:</p>
-<p class="has-line-data" data-line-start="224" data-line-end="225"><img src="https://miro.medium.com/max/875/1*1WWTbW9yyEJ69TF1rsPv4g.png" alt=""></p>
-<p class="has-line-data" data-line-start="226" data-line-end="227">Aby zmniejszyć rozmiar tablicy, zmniejszamy ją za pomocą algorytmu o nazwie max pooling. Brzmi dziwnie, ale wcale tak nie jest. Po prostu przyjrzymy się każdemu kwadratowi 2x2, tablicy i zachowamy największą liczbę</p>
-<p class="has-line-data" data-line-start="228" data-line-end="229"><img src="https://miro.medium.com/max/875/1*xOAroFiw9X0WSkCwgcIO6Q.png" alt=""></p>
-<p class="has-line-data" data-line-start="230" data-line-end="231">Pomysł jest taki, że jeśli znaleźliśmy coś interesującego w którejkolwiek z czterech płytek wejściowych, które tworzą każdy kwadrat siatki 2x2, po prostu zachowamy najbardziej interesujący fragment. Zmniejsza to rozmiar naszej tablicy przy zachowaniu najważniejszych bitów.</p>
-<h5 class="code-line" data-line-start=232 data-line-end=233><a id="Krok_5_Przeprowad_prognoz_232"></a>Krok 5: Przeprowadź prognozę</h5>
-<p class="has-line-data" data-line-start="234" data-line-end="235">Do tej pory zredukowaliśmy gigantyczny obraz do dość małej tablicy. Ta tablica to tylko zbiór liczb, więc możemy użyć tej małej tablicy jako danych wejściowych do innej sieci neuronowej. Ta ostateczna sieć neuronowa zdecyduje, czy obraz pasuje, czy nie. Aby odróżnić ją od etapu konwolucji, nazywamy to siecią „w pełni połączoną”.</p>
+<p class="has-line-data" data-line-start="230" data-line-end="231">Innymi słowy, zaczęliśmy od dużego obrazu, a skończyliśmy na nieco mniejszej tablicy, która rejestruje, które sekcje naszego oryginalnego obrazu były najbardziej interesujące.</p>
+<h5 class="code-line" data-line-start=232 data-line-end=233><a id="Krok_4_Downsampling_232"></a>Krok 4: Downsampling</h5>
+<p class="has-line-data" data-line-start="234" data-line-end="235">Wynikiem kroku 3 była tablica mapująca, które części oryginalnego obrazu są najbardziej interesujące. Ale ta tablica jest nadal dość duża:</p>
+<p class="has-line-data" data-line-start="237" data-line-end="238"><img src="https://miro.medium.com/max/875/1*1WWTbW9yyEJ69TF1rsPv4g.png" alt=""></p>
+<p class="has-line-data" data-line-start="239" data-line-end="240">Aby zmniejszyć rozmiar tablicy, zmniejszamy ją za pomocą algorytmu o nazwie max pooling. Brzmi dziwnie, ale wcale tak nie jest. Po prostu przyjrzymy się każdemu kwadratowi 2x2, tablicy i zachowamy największą liczbę</p>
+<p class="has-line-data" data-line-start="241" data-line-end="242"><img src="https://miro.medium.com/max/875/1*xOAroFiw9X0WSkCwgcIO6Q.png" alt=""></p>
+<p class="has-line-data" data-line-start="243" data-line-end="244">Pomysł jest taki, że jeśli znaleźliśmy coś interesującego w którejkolwiek z czterech płytek wejściowych, które tworzą każdy kwadrat siatki 2x2, po prostu zachowamy najbardziej interesujący fragment. Zmniejsza to rozmiar naszej tablicy przy zachowaniu najważniejszych bitów.</p>
+<h5 class="code-line" data-line-start=245 data-line-end=246><a id="Krok_5_Przeprowad_prognoz_245"></a>Krok 5: Przeprowadź prognozę</h5>
+<p class="has-line-data" data-line-start="247" data-line-end="248">Do tej pory zredukowaliśmy gigantyczny obraz do dość małej tablicy. Ta tablica to tylko zbiór liczb, więc możemy użyć tej małej tablicy jako danych wejściowych do innej sieci neuronowej. Ta ostateczna sieć neuronowa zdecyduje, czy obraz pasuje, czy nie. Aby odróżnić ją od etapu konwolucji, nazywamy to siecią „w pełni połączoną”.</p>
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -326,8 +342,8 @@
     </tr>
     </tbody>
 </table>
-<h3 class="code-line" data-line-start=243 data-line-end=244><a id="Dodawanie_jeszcze_wikszej_liczby_krokw_243"></a>Dodawanie jeszcze większej liczby kroków</h3>
-<p class="has-line-data" data-line-start="245" data-line-end="249">Nasz potok przetwarzania obrazu składa się z szeregu etapów: konwolucji, max poolingu i wreszcie w pełni połączonej sieci.<br>
+<h3 class="code-line" data-line-start=256 data-line-end=257><a id="Dodawanie_jeszcze_wikszej_liczby_krokw_256"></a>Dodawanie jeszcze większej liczby kroków</h3>
+<p class="has-line-data" data-line-start="258" data-line-end="262">Nasz potok przetwarzania obrazu składa się z szeregu etapów: konwolucji, max poolingu i wreszcie w pełni połączonej sieci.<br>
     Podczas rozwiązywania problemów te kroki można łączyć i układać dowolną liczbę razy! Możma mieć dwie, trzy lub nawet dziesięć warstw knwolucji. Można wprowadzić max pooling w dowolnym miejscu, w którym checmy zmniejszyć rozmiar danych.<br>
     Podstawowym pomysłem jest rozpoczęcie od dużego obrazu i ciągłe zmniejszanie go, krok po kroku, aż w końcu uzyskamy pojedynczy wynik. Im więcej jest kroków konwolucyjnych, tym bardziej skomplikowane funkcje będzie w stanie rozpoznać Twoja sieć.<br>
     Na przykład, przy wykrywaniu ptaków na zdjęciach, pierwszy krok konwolucji może nauczyć się rozpoznawać ostre krawędzie, drugi krok może rozpoznawać dzioby na podstawie wiedzy o ostrych krawędziach, trzeci krok może rozpoznawać całe ptaki na podstawie wiedzy o dziobach itp.</p>
@@ -343,53 +359,53 @@
     </tr>
     </tbody>
 </table>
-<p class="has-line-data" data-line-start="255" data-line-end="256">W tym przypadku uruchamiają obraz o wymiarach 224 x 224 pikseli, stosują konwolucje i dwukrotnie max pooling, stosują konwolucje jeszcze 3 razy, stosują maxpooling, a następnie mają dwie w pełni połączone warstwy. Efekt końcowy jest taki, że obraz jest klasyfikowany do jednej z 1000 kategorii!</p>
-<h3 class="code-line" data-line-start=258 data-line-end=259><a id="0_Budowa_waciwej_sieci___w_tym_rozdziale_trzeba_co_mdrego_napisa_258"></a>0 Budowa właściwej sieci (// w tym rozdziale trzeba coś mądrego napisać)</h3>
-<p class="has-line-data" data-line-start="260" data-line-end="262">Skąd wiadomo, które kroki należy połączyć, aby klasyfikator obrazu działał jak najlepiej?<br>
+<p class="has-line-data" data-line-start="268" data-line-end="269">W tym przypadku uruchamiają obraz o wymiarach 224 x 224 pikseli, stosują konwolucje i dwukrotnie max pooling, stosują konwolucje jeszcze 3 razy, stosują maxpooling, a następnie mają dwie w pełni połączone warstwy. Efekt końcowy jest taki, że obraz jest klasyfikowany do jednej z 1000 kategorii!</p>
+<h3 class="code-line" data-line-start=271 data-line-end=272><a id="0_Budowa_waciwej_sieci___w_tym_rozdziale_trzeba_co_mdrego_napisa_271"></a>0 Budowa właściwej sieci (// w tym rozdziale trzeba coś mądrego napisać)</h3>
+<p class="has-line-data" data-line-start="273" data-line-end="275">Skąd wiadomo, które kroki należy połączyć, aby klasyfikator obrazu działał jak najlepiej?<br>
     Trzeba na to odpowiedzieć, wykonując wiele eksperymentów i testów. Być może będzie trzeba wytrenować 100 sieci, zanim znajdziemy optymalną strukturę i parametry dla rozwiązywanego problemu. Uczenie maszynowe wymaga wielu prób i błędów.</p>
-<h2 class="code-line" data-line-start=263 data-line-end=264><a id="Tworzenie_klasyfikatora_ptakw_263"></a>Tworzenie klasyfikatora ptaków</h2>
-<h4 class="code-line" data-line-start=265 data-line-end=266><a id="1_pataki_by_w_arytkule__trzba_to_zaznaczy_bo_bdziemy_robili_to_co_w_artykule_cay_sens_CNN_jest_wytumaczony_wyej_wic_nie_ma_sensu_wymyla_swoich_modeli_i_szuka_baz_danych_265"></a>1. pataki był w arytkule - trzba to zaznaczyć. bo będziemy robili to co w artykule. cały sens CNN jest wytłumaczony wyżej więc nie ma sensu wymyślać swoich modeli i szukać baz danych</h4>
+<h2 class="code-line" data-line-start=276 data-line-end=277><a id="Tworzenie_klasyfikatora_ptakw_276"></a>Tworzenie klasyfikatora ptaków</h2>
+<h4 class="code-line" data-line-start=278 data-line-end=279><a id="1_pataki_by_w_arytkule__trzba_to_zaznaczy_bo_bdziemy_robili_to_co_w_artykule_cay_sens_CNN_jest_wytumaczony_wyej_wic_nie_ma_sensu_wymyla_swoich_modeli_i_szuka_baz_danych_278"></a>1. pataki był w arytkule - trzba to zaznaczyć. bo będziemy robili to co w artykule. cały sens CNN jest wytłumaczony wyżej więc nie ma sensu wymyślać swoich modeli i szukać baz danych</h4>
 <ul>
-    <li class="has-line-data" data-line-start="267" data-line-end="269">to czy wszystko powyżej czyli: wprowadzenie, ML, Deep learing, CNN jest dobrze wytłumaczone to mam do ciebie prośbe jakbyś rzucić okiem co ja tam najebany napisałem - ja to jeszcze przejrze ty tylko zerknij tak bardziej pod względem technicznym - czy nie pierdole głupot (no niestety jestem w stanie jakium jestem i to jest constant - przepraszam bro naprawdę)</li>
+    <li class="has-line-data" data-line-start="280" data-line-end="282">to czy wszystko powyżej czyli: wprowadzenie, ML, Deep learing, CNN jest dobrze wytłumaczone to mam do ciebie prośbe jakbyś rzucić okiem co ja tam najebany napisałem - ja to jeszcze przejrze ty tylko zerknij tak bardziej pod względem technicznym - czy nie pierdole głupot (no niestety jestem w stanie jakium jestem i to jest constant - przepraszam bro naprawdę)</li>
 </ul>
-<h1 class="code-line" data-line-start=269 data-line-end=270><a id="2_reszta_artykuu_jest_do_dokoczenia__jakie_1h_pracy_z_tumaczeniem_chyba_269"></a>2. reszta artykułu jest do dokończenia - jakieś 1h pracy z tłumaczeniem (?chyba?)</h1>
-<h1 class="code-line" data-line-start=270 data-line-end=271><a id="3_trzeba_jeszcze_zredagowa_tekst_270"></a>3. trzeba jeszcze zredagować tekst</h1>
+<h1 class="code-line" data-line-start=282 data-line-end=283><a id="2_reszta_artykuu_jest_do_dokoczenia__jakie_1h_pracy_z_tumaczeniem_chyba_282"></a>2. reszta artykułu jest do dokończenia - jakieś 1h pracy z tłumaczeniem (?chyba?)</h1>
+<h1 class="code-line" data-line-start=283 data-line-end=284><a id="3_trzeba_jeszcze_zredagowa_tekst_283"></a>3. trzeba jeszcze zredagować tekst</h1>
 <ul>
-    <li class="has-line-data" data-line-start="271" data-line-end="272">poprawić błędy gramatyczne, literówki,</li>
-    <li class="has-line-data" data-line-start="272" data-line-end="274">zmienić styl językowy na taki bardziej typu sprawozdanie, nie artykułowy
+    <li class="has-line-data" data-line-start="284" data-line-end="285">poprawić błędy gramatyczne, literówki,</li>
+    <li class="has-line-data" data-line-start="285" data-line-end="287">zmienić styl językowy na taki bardziej typu sprawozdanie, nie artykułowy
         <ul>
-            <li class="has-line-data" data-line-start="273" data-line-end="274">wyjebać teksty takie jak “to bardzo proste musisz tylko coś tam, heh ML is funny bruh”) bo mr. Bielecki się może obrazić.</li>
+            <li class="has-line-data" data-line-start="286" data-line-end="287">wyjebać teksty takie jak “to bardzo proste musisz tylko coś tam, heh ML is funny bruh”) bo mr. Bielecki się może obrazić.</li>
         </ul>
     </li>
-    <li class="has-line-data" data-line-start="274" data-line-end="279">trzeba zmienić wyrażenia typu “machine learning”, “artificial inteligence”, czy “deep learning” na:
+    <li class="has-line-data" data-line-start="287" data-line-end="292">trzeba zmienić wyrażenia typu “machine learning”, “artificial inteligence”, czy “deep learning” na:
         <ul>
-            <li class="has-line-data" data-line-start="275" data-line-end="276">albo machine learning - ML</li>
-            <li class="has-line-data" data-line-start="276" data-line-end="277">albo machine learning - uczenia maszynowe</li>
-            <li class="has-line-data" data-line-start="277" data-line-end="279">tak żeby była spójność językowa - albo skróty, albo po polsku albo po angielsku</li>
+            <li class="has-line-data" data-line-start="288" data-line-end="289">albo machine learning - ML</li>
+            <li class="has-line-data" data-line-start="289" data-line-end="290">albo machine learning - uczenia maszynowe</li>
+            <li class="has-line-data" data-line-start="290" data-line-end="292">tak żeby była spójność językowa - albo skróty, albo po polsku albo po angielsku</li>
         </ul>
     </li>
 </ul>
-<h1 class="code-line" data-line-start=279 data-line-end=280><a id="4_jeszcze_jaki_code_snippet_trzeba_doda_jest_na_dole_artykuu_279"></a>4. jeszcze jakiś code snippet trzeba dodać (jest na dole artykułu)</h1>
-<h1 class="code-line" data-line-start=280 data-line-end=281><a id="5_do_tego_chyba_jeszcze_testy_tzn_jak_si_to_testuje__ale_to_te_copy_paste_bo_na_dole_artykuu_jest_280"></a>5. do tego chyba jeszcze testy (tzn. jak się to testuje - ale to też copy paste bo na dole artykułu jest)</h1>
-<h1 class="code-line" data-line-start=281 data-line-end=282><a id="6_ja_chciabym_to_przerzuci_na_web_app_tak_by_mr_Bielecki_mg_sobie_kilkn_link_zobaczy_sprawozdanieartyku_w_naszej_wersji_razem_z_imlpementacj_a_obok_bym_jebn_skrypt_tak_eby_sobie_mg_sprawdzi_czy_to_dziaa_i_eby_mu_wypluwao_jakie_dane_jak_si_da_bo_281"></a>6. ja chciałbym to przerzucić na web app, tak by mr. Bielecki mógł sobie kilknąć link, zobaczyć sprawozdanie/artykuł (w naszej wersji) razem z imlpementacją. a obok bym jebnął skrypt tak żeby sobie mógł sprawdzić czy to działa i żeby mu wypluwało jakieś dane (jak się da) bo:</h1>
+<h1 class="code-line" data-line-start=292 data-line-end=293><a id="4_jeszcze_jaki_code_snippet_trzeba_doda_jest_na_dole_artykuu_292"></a>4. jeszcze jakiś code snippet trzeba dodać (jest na dole artykułu)</h1>
+<h1 class="code-line" data-line-start=293 data-line-end=294><a id="5_do_tego_chyba_jeszcze_testy_tzn_jak_si_to_testuje__ale_to_te_copy_paste_bo_na_dole_artykuu_jest_293"></a>5. do tego chyba jeszcze testy (tzn. jak się to testuje - ale to też copy paste bo na dole artykułu jest)</h1>
+<h1 class="code-line" data-line-start=294 data-line-end=295><a id="6_ja_chciabym_to_przerzuci_na_web_app_tak_by_mr_Bielecki_mg_sobie_kilkn_link_zobaczy_sprawozdanieartyku_w_naszej_wersji_razem_z_imlpementacj_a_obok_bym_jebn_skrypt_tak_eby_sobie_mg_sprawdzi_czy_to_dziaa_i_eby_mu_wypluwao_jakie_dane_jak_si_da_bo_294"></a>6. ja chciałbym to przerzucić na web app, tak by mr. Bielecki mógł sobie kilknąć link, zobaczyć sprawozdanie/artykuł (w naszej wersji) razem z imlpementacją. a obok bym jebnął skrypt tak żeby sobie mógł sprawdzić czy to działa i żeby mu wypluwało jakieś dane (jak się da) bo:</h1>
 <ul>
-    <li class="has-line-data" data-line-start="282" data-line-end="285">mam to napisane w .md ale zapisywanie do pdf nie wychodzi (i nie wiem jak to wszystko mr. Bieleckiemu pokazać - w jakim formacie on to chciał)
+    <li class="has-line-data" data-line-start="295" data-line-end="298">mam to napisane w .md ale zapisywanie do pdf nie wychodzi (i nie wiem jak to wszystko mr. Bieleckiemu pokazać - w jakim formacie on to chciał)
         <ul>
-            <li class="has-line-data" data-line-start="283" data-line-end="284">pisałem to na <a href="https://dillinger.io">dillinger.io</a> - chyba nie najepszy wybór</li>
-            <li class="has-line-data" data-line-start="284" data-line-end="285">za to ładnie mogę pobrać Styled HTML - więc osadzenie tam skryptu powinno być łatwe. i wtedy mamy jeden plik .html jako static web page (chyba, żę import pythona nie pozwala - nie znam się za bardzo)</li>
+            <li class="has-line-data" data-line-start="296" data-line-end="297">pisałem to na <a href="https://dillinger.io">dillinger.io</a> - chyba nie najepszy wybór</li>
+            <li class="has-line-data" data-line-start="297" data-line-end="298">za to ładnie mogę pobrać Styled HTML - więc osadzenie tam skryptu powinno być łatwe. i wtedy mamy jeden plik .html jako static web page (chyba, żę import pythona nie pozwala - nie znam się za bardzo)</li>
         </ul>
     </li>
-    <li class="has-line-data" data-line-start="285" data-line-end="287">może wtedy mr. Bielecki trochę łaskawszym okiem spojrzy jak dorzucimy jakiś interfejs webowy</li>
+    <li class="has-line-data" data-line-start="298" data-line-end="300">może wtedy mr. Bielecki trochę łaskawszym okiem spojrzy jak dorzucimy jakiś interfejs webowy</li>
 </ul>
-<h1 class="code-line" data-line-start=287 data-line-end=288><a id="7_nie_wiem_do_kiedy_deadline_ale_tak_apk_to_chyba_w_2_minuty_bo_mamy_plik_html_w_ktrym_jest_wszystko_i_albo_dorobi_jaki_kod_w_js_i_na_githubpages_albo_tak_jak_mwie_o_heroku_a_jak_nie_to_jeba_D_287"></a>7. nie wiem do kiedy deadline ale taką apkę to chyba w 2 minuty (bo mamy plik .html w którym jest wszystko) i albo dorobić jakiś kod w .js i na githubpages albo tak jak mówiłeś o heroku a jak nie to jebać :D</h1>
-<h1 class="code-line" data-line-start=289 data-line-end=290><a id="8_chyba_wikszo_podpunktw_zaatwie_sam_tylko_troch_czasu_potrzebuje_i_motywacji_xD__ale_zapierdalam_dzie_i_noc_z_tym_web_app__to_twoja_decyzja_czy_robimy_czy_tylko_oddajemy_sprawozdanie_w_formie_289"></a>8. chyba większość podpunktów załatwie sam tylko trochę czasu potrzebuje (i motywacji xD - ale zapierdalam dzień i noc), z tym web app - to twoja decyzja czy robimy czy tylko oddajemy sprawozdanie w formie:</h1>
+<h1 class="code-line" data-line-start=300 data-line-end=301><a id="7_nie_wiem_do_kiedy_deadline_ale_tak_apk_to_chyba_w_2_minuty_bo_mamy_plik_html_w_ktrym_jest_wszystko_i_albo_dorobi_jaki_kod_w_js_i_na_githubpages_albo_tak_jak_mwie_o_heroku_a_jak_nie_to_jeba_D_300"></a>7. nie wiem do kiedy deadline ale taką apkę to chyba w 2 minuty (bo mamy plik .html w którym jest wszystko) i albo dorobić jakiś kod w .js i na githubpages albo tak jak mówiłeś o heroku a jak nie to jebać :D</h1>
+<h1 class="code-line" data-line-start=302 data-line-end=303><a id="8_chyba_wikszo_podpunktw_zaatwie_sam_tylko_troch_czasu_potrzebuje_i_motywacji_xD__ale_zapierdalam_dzie_i_noc_z_tym_web_app__to_twoja_decyzja_czy_robimy_czy_tylko_oddajemy_sprawozdanie_w_formie_302"></a>8. chyba większość podpunktów załatwie sam tylko trochę czasu potrzebuje (i motywacji xD - ale zapierdalam dzień i noc), z tym web app - to twoja decyzja czy robimy czy tylko oddajemy sprawozdanie w formie:</h1>
 <ul>
-    <li class="has-line-data" data-line-start="290" data-line-end="291">pdf</li>
-    <li class="has-line-data" data-line-start="291" data-line-end="292">Styled Html - i podis otwórz sobie to zobaczysz zioooom</li>
-    <li class="has-line-data" data-line-start="292" data-line-end="293">gdzieś to hostujemy jako jakąś stronke</li>
-    <li class="has-line-data" data-line-start="293" data-line-end="295">twoje pomysły</li>
+    <li class="has-line-data" data-line-start="303" data-line-end="304">pdf</li>
+    <li class="has-line-data" data-line-start="304" data-line-end="305">Styled Html - i podis otwórz sobie to zobaczysz zioooom</li>
+    <li class="has-line-data" data-line-start="305" data-line-end="306">gdzieś to hostujemy jako jakąś stronke</li>
+    <li class="has-line-data" data-line-start="306" data-line-end="308">twoje pomysły</li>
 </ul>
 <blockquote>
-    <p class="has-line-data" data-line-start="295" data-line-end="296">jak to przeczytasz to daj znać - ja poprawię/zrobię wszystko co trzeba. Ty tylko zadecyduj co trzeba. Fajnie jakbyś zerknął na rzeczy z pkt 6,7,8.ewentualnie pkt 1 może 3</p>
+    <p class="has-line-data" data-line-start="308" data-line-end="309">jak to przeczytasz to daj znać - ja poprawię/zrobię wszystko co trzeba. Ty tylko zadecyduj co trzeba. Fajnie jakbyś zerknął na rzeczy z pkt 6,7,8.ewentualnie pkt 1 może 3</p>
 </blockquote>
 </body></html>

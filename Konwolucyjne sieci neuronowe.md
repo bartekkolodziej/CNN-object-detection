@@ -82,15 +82,15 @@ CNN jest w stanie **skutecznie uchwycić zależności przestrzenne i czasowe** n
 Można sobie wyobrazić, jak bardzo są to rzeczy wymagające dużej mocy obliczeniowej, gdy obrazy osiągną wymiary, powiedzmy 8K (7680 × 4320). Rolą CNN jest zredukowanie obrazów do postaci, która jest łatwiejsza do przetworzenia, bez utraty informacji, które są kluczowe dla uzyskania dobrej prognozy. Jest to ważne, gdy mamy zaprojektować architekturę, która jest skalowalna do ogromnych zbiorów danych.
 
 
-### 2. Warstwa konwolucyjna - The Kernel (jądro)
+### 2. Warstwa konwolucyjna, The Kernel (jądro)
 
 Wymiary obrazu = 5 (wysokość) x 5 (szerokość) x 1 (liczba kanałów, np. RGB)
 
-| Przekształcanie obrazu 5x5x1 z jądrem 3x3x1 w celu uzyskania skręconej funkcji 3x3x1| 
+| Przekształcanie obrazu 5x5x1 z jądrem 3x3x1 w celu uzyskania funkcji konwolucyjnej 3x3x1| 
 |:---:|
 |![](https://miro.medium.com/max/625/1*GcI7G-JLAQiEoCON7xFbhg.gif) |
 
-W powyższej animacji sekcja zielona odwzorowywuje nasz **obraz wejściowy 5x5x1.** Element odpowiedzialny za wykonanie operacji pierwszej części warstwy konwolucyjnej nazywany **jest jądrem / filtrem, K**, reprezentowany kolorem żółtym. W tym przypadku **K to macierz 3x3x1.**
+W powyższej animacji sekcja zielona odwzorowywuje nasz **obraz wejściowy 5x5x1.** Element odpowiedzialny za wykonanie operacji mnożenia nazywany jest **jądrem / filtrem, K**, reprezentowany kolorem żółtym. W tym przypadku **K to macierz 3x3x1.**
 
 ```
 Kernel/Filter, K = 
@@ -99,12 +99,7 @@ Kernel/Filter, K =
 1  0  1
 ```
 
-Jądro przesuwa się 9 razy z powodu **długości kroku = 1 (bez kroku)**, za każdym razem wykonując operację **mnożenia macierzy między K a częścią P obrazu**, nad którym jądro się przesuwa
-
-| Przesuwanie się jądra| 
-|:---:|
-|![](https://miro.medium.com/max/408/1*NsiYxt8tPDQyjyH3C08PVA@2x.png) |
-
+Jądro przesuwa się 9 razy z powodu **długości kroku = 1 (bez kroku)**, za każdym razem wykonując operację **mnożenia macierzy między K a częścią obrazu, nad którym jądro się przesuwa (0 lub 1)**. Wynikiem operacji jest suma wykonanych mnożeń (w powyższym przypadku dla każdego max = 5, min = 0).
 Filtr przesuwa się w prawo z określoną wartością kroku, aż przeanalizuje całą szerokość. Przechodząc dalej, przeskakuje w dół do początku (do lewej) obrazu z tą samą wartością kroku i powtarza ten proces aż do przejścia całego obrazu.
 
 
@@ -113,6 +108,24 @@ Filtr przesuwa się w prawo z określoną wartością kroku, aż przeanalizuje c
 |:---:|
 |![](https://miro.medium.com/max/875/1*ciDgQEjViWLnCbmX-EeSrA.gif) |
 
+Celem operacji konwolucji jest wyodrębnienie cech wysokiego poziomu, takich jak krawędzie, z obrazu wejściowego. Sieci konwolucyjne nie muszą być ograniczone tylko do jednej warstwy. Tradycyjnie, pierwsza warstwa jest odpowiedzialna za przechwytywanie cech niskiego poziomu, takich jak krawędzie, kolor, orientacja gradientu itp. Dzięki dodawaniu warstw architektura dostosowuje się również do funkcji wysokiego poziomu, dając nam sieć, która ma pełnowartościowe zrozumienie obrazów w zbiorze danych.
+
+|Operacja konwolucji z długością kroku = 2| 
+|:---:|
+|![](https://miro.medium.com/max/494/1*1VJDP6qDY9-ExTuQVEOlVg.gif) |
+
+
+
+### 3. Pooling Layer
+
+Podobnie jak warstwa konwolucyjna, Pooling layer jest odpowiedzialna za zmniejszenie rozmiaru przestrzennego elementu konwolucyjnego. Ma to na celu zmniejszenie mocy obliczeniowej wymaganej do przetwarzania danych poprzez redukcję wymiarowości. Ponadto jest przydatny do wyodrębniania dominujących cech, które są niezmienne rotacyjnie i pozycyjnie, a tym samym podtrzymuje proces efektywnego uczenia modelu.
+
+
+|Pooling 3x3 na funkcji splotu 5x5| 
+|:---:|
+|![](https://miro.medium.com/max/495/1*uoWYsCV5vBU8SHFPAPao-w.gif) |
+
+Istnieją dwa rodzaje operacji Polling'u: Max pooling i Average Pooling. Max Pooling zwraca maksymalną wartość z części obrazu "pokrytej" przez jądro (kernel). Z drugiej strony, Average Pooling zwraca średnią wszystkich wartości z części obrazu "pokrytej" przez jądro.
 
 
 # Rozpoznawanie obrazów
