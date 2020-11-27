@@ -6,7 +6,7 @@ W niniejszym sprawdozdaniu zostanie przedstawiony sposób działania głębokieg
 
 |  Google umożliwia teraz wyszukiwanie własnych zdjęć według opisu - nawet jeśli nie są one otagowane  |
 |---|
-|![](https://lh3.googleusercontent.com/3P13tIcHi2IeTAYnErANOo1Hz9O2avwQ2KqeT8y2uyEnuqLWC_6L-hj-vu_DXnEAfUepy66fPOTddsugW9APGbpvHhrBhuqxCeldBClT72WGWt3ibCAzwbYOo8kPTmvjngu5J5OAizBfozPiQFr_XtiJKiRLO45hoaPAZ33D4PwEvyLC77MkdWOZD9hU07TMcNXLlrJw26kvxrcQGUEArg3UUhuPjbqu3GWkQnCGHgLcE53C2ga2tCXLZd3yDcGVoN93tR_hIb5WeAEgadpaK-c_6lnN_KSxT_ijsNfe_CtSS4Y5VcdMjjZruAp4HUpD5uFo-d0R2FfDGRQuj0-g3AAXFZBH1BR7nTYXT1xVkM76wsiSEUSNklMLh-oJKN0jFdXtDmFbemkaEFabYDNGjah9ErmhvWE6tvtXXMYnGwlEaVpxT8ql0dRFcASE9XFib62zaY5QgI2-b6lVM-PyXkrUokc9ucX8VilBJif3exO_drfN2IIjoMqYN9oRvzGkqOZcuxiD4gZ_Z5ysIBs-KGhRpJBfx5FsiegsE6g-ZR8EB6rHpPA6o41I5fm_0aNvdVY9EPWJsfxcgSdSTM3SUqUcOf_vGGOE2c3ihW8isfKhF6yVf7PPmWx9Gold-tix7u0DX7F8R08pnBqDtLvuRRcIMuuK7SJ5eEyHRMA0vlxbWfxgKNBtxAINhFu8=w1606-h432-no?authuser=0)|
+|![](https://miro.medium.com/max/875/1*F-6upZSC6GMMTP9yHeuwDg.gif)|
 
 
 
@@ -144,11 +144,12 @@ Dodanie warstwy w pełni połączonej jest (zwykle) tanim sposobem uczenia się 
 |![](https://miro.medium.com/max/875/1*kToStLowjokojIQ7pY2ynQ.jpeg)|
 
 
-Teraz, gdy przekonwertowaliśmy nasz obraz wejściowy do odpowiedniej postaci dla naszego wielopoziomowego perceptronu, spłaszczamy obraz do wektora kolumnowego. Spłaszczony output jest podawany do sieci neuronowej ze sprzężeniem zwrotnym i propagacją wsteczną stosowaną w każdej iteracji treningu. Na przestrzeni szeregu epok model jest w stanie rozróżnić cechy dominujące i pewne cechy niskiego poziomu w obrazach a następnie sklasyfikować je za pomocą techniki klasyfikacji Softmax.
+Teraz, gdy przekonwertowaliśmy nasz obraz wejściowy do odpowiedniej postaci dla naszego wielopoziomowego perceptronu, spłaszczamy obraz do wektora kolumnowego. Spłaszczony output jest podawany do sieci neuronowej ze sprzężeniem zwrotnym i propagacją wsteczną stosowaną w każdej iteracji treningu. Na przestrzeni szeregu okresów szkoleniowych model jest w stanie rozróżnić cechy dominujące i pewne cechy niskiego poziomu w obrazach a następnie sklasyfikować je za pomocą techniki klasyfikacji Softmax.
 
 
-# Rozpoznawanie obrazów
-### Na początek proste rozpoznawanie pisma odręcznego (liczby osiem)
+# Rozpoznawanie obrazów - ograniczenia i techniki
+***Na początek proste rozpoznawanie pisma odręcznego (liczby osiem)***
+
 W ML do uczenia sieci neuronowych zazwyczaj używamy liczb. Ale teraz chcemy przetwarzać obrazy przy użyciu tychże sieci. Jak wprowadzić obrazy do sieci neuronowej zamiast liczb? Sieć neuronowa przyjmuje liczby jako dane wejściowe. Dla komputera obraz jest w rzeczywistości tylko siatką liczb, które reprezentują, jak ciemny jest każdy piksel
 
  | Aby przesłać obraz do naszej sieci neuronowej, po prostu traktujemy obraz 18x18 pikseli jako tablicę 324 liczb  | 
@@ -214,6 +215,7 @@ Więcej danych niestety utrudnia rozwiązywanie problemu przez sieć neuronową,
 
 ## Konwolucja - jak działa (uproszczony przykład)
  >Dla wygody (dostępność materiałów zaczerpniętych z artykułu) użycie konwolucyjnych sieci neuronowych, w tym rozdziale, zostanie przedstawione na przykładzie zdjęcia dziecka. 
+ ![](https://miro.medium.com/max/875/1*v_06o9d5u4k2lp9cTHQUtg.jpeg)
  >
  
 Zamiast dostarczać całe obrazy do naszej sieci neuronowej jako jedną siatkę liczb, wykorzystamy fakt, że obiekt jest taki sam bez względu na to, gdzie się pojawia na obrazie.
@@ -276,7 +278,7 @@ Do tej pory zredukowaliśmy gigantyczny obraz do dość małej tablicy. Ta tabli
  
  Nasz potok przetwarzania obrazu składa się z szeregu etapów: konwolucji, max poolingu i wreszcie w pełni połączonej sieci.
 Podczas rozwiązywania problemów te kroki można łączyć i układać dowolną liczbę razy! Możma mieć dwie, trzy lub nawet dziesięć warstw knwolucji. Można wprowadzić max pooling w dowolnym miejscu, w którym checmy zmniejszyć rozmiar danych.
-Podstawowym pomysłem jest rozpoczęcie od dużego obrazu i ciągłe zmniejszanie go, krok po kroku, aż w końcu uzyskamy pojedynczy wynik. Im więcej jest kroków konwolucyjnych, tym bardziej skomplikowane funkcje będzie w stanie rozpoznać Twoja sieć.
+Podstawowym pomysłem jest rozpoczęcie od dużego obrazu i ciągłe zmniejszanie go, krok po kroku, aż w końcu uzyskamy pojedynczy wynik. Im więcej jest kroków konwolucyjnych, tym bardziej skomplikowane elementy będzie w stanie rozpoznać nasza sieć.
 Na przykład, przy wykrywaniu ptaków na zdjęciach, pierwszy krok konwolucji może nauczyć się rozpoznawać ostre krawędzie, drugi krok  może rozpoznawać dzioby na podstawie wiedzy o ostrych krawędziach, trzeci krok może rozpoznawać całe ptaki na podstawie wiedzy o dziobach itp.
 
  |Oto jak wygląda bardziej realistyczna głęboka sieć konwolucyjna| 
@@ -287,8 +289,122 @@ Na przykład, przy wykrywaniu ptaków na zdjęciach, pierwszy krok konwolucji mo
 W tym przypadku uruchamiają obraz o wymiarach 224 x 224 pikseli, stosują konwolucje i dwukrotnie max pooling, stosują konwolucje jeszcze 3 razy, stosują maxpooling, a następnie mają dwie w pełni połączone warstwy. Efekt końcowy jest taki, że obraz jest klasyfikowany do jednej z 1000 kategorii!
 
 Skąd wiadomo, które kroki należy połączyć, aby klasyfikator obrazu działał jak najlepiej?
-Trzeba na to odpowiedzieć, wykonując wiele eksperymentów i testów. Być może będzie trzeba wytrenować 100 sieci, zanim znajdziemy optymalną strukturę i parametry dla rozwiązywanego problemu. Uczenie maszynowe wymaga wielu prób i błędów.
+Odpowiedzieć na to pytanie, wykonując wiele eksperymentów i testów?. Być może będzie trzeba wytrenować 100 sieci, zanim znajdziemy optymalną strukturę i parametry dla rozwiązywanego problemu. Dodatkowo oprócz opisanych w tym rozdziale elementów istnieją jeszcze inne udoskonalenia CNN. Dostępne i dobrze znane są różne architektury CNN. Odegrały one kluczową rolę w tworzeniu algorytmów, które zasilają i będą zasilać sztuczną inteligencję jako całość w dającej się przewidzieć przyszłości. Niektóre z nich to:
+- LeNet
+- AlexNet
+- VGGNet
+- GoogLeNet
+- ResNet
+- ZFNet
 
+# Praktyczny przykład wraz z implementacją (tensorflow)
+
+>"Klasyfikator ptaków"
+
+
+Jak w każdym przypadku potrzebujemy danych, aby rozpocząć. Bezpłatny zestaw danych [CIFAR10](https://www.cs.toronto.edu/~kriz/cifar.html) zawiera 6000 zdjęć ptaków i 52000 zdjęć rzeczy, które nie są ptakami. Aby jednak uzyskać jeszcze więcej danych, dodamy również zestaw danych [Caltech-UCSD Birds-200–2011](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html) , który zawiera kolejne 12 000 zdjęć ptaków. 
+
+|Oto kilka ptaków z naszego połączonego zbioru danych| 
+|:---:|
+|![](https://miro.medium.com/max/1250/1*r9I5D3NXCn8gnLOjahuSQA.png) |
+ 
+|A oto niektóre z 52 000 obrazów innych niż ptaki| 
+|:---:|
+|![](https://miro.medium.com/max/1250/1*ODaXoLQY4-D7zqHrqeA4Uw.png) |
+
+
+Ten zestaw danych będzie działał dobrze w naszym prostym przykładzie, ale 72 000 obrazów o niskiej rozdzielczości to wciąż dość mało dla rzeczywistych zastosowań. Jeśli zależałoby nam na wydajności na poziomie aplikacji Google, potrzeba by nam milionów dużych obrazów. W uczeniu maszynowym posiadanie większej ilości danych jest prawie zawsze ważniejsze niż lepsze algorytmy.
+
+
+Aby zbudować nasz klasyfikator, użyjemy [TFLearn](http://tflearn.org/). TFlearn to wrapper biblioteki  [TensorFlow](https://www.tensorflow.org/) od Google. Służy  do głębokiego uczenia, oraz udostępnia uproszczony interfejs API, dzięki czemu budowanie konwolucyjnych sieci neuronowych jest bardzo proste.
+
+Oto kod definiujący i szkolący sieć:
+
+```python
+from __future__ import division, print_function, absolute_import
+
+# Import tflearn and some helpers
+import tflearn
+from tflearn.data_utils import shuffle
+from tflearn.layers.core import input_data, dropout, fully_connected
+from tflearn.layers.conv import conv_2d, max_pool_2d
+from tflearn.layers.estimator import regression
+from tflearn.data_preprocessing import ImagePreprocessing
+from tflearn.data_augmentation import ImageAugmentation
+import pickle
+
+# Load the data set
+X, Y, X_test, Y_test = pickle.load(open("full_dataset.pkl", "rb"))
+
+# Shuffle the data
+X, Y = shuffle(X, Y)
+
+# Make sure the data is normalized
+img_prep = ImagePreprocessing()
+img_prep.add_featurewise_zero_center()
+img_prep.add_featurewise_stdnorm()
+
+# Create extra synthetic training data by flipping, rotating and blurring the
+# images on our data set.
+img_aug = ImageAugmentation()
+img_aug.add_random_flip_leftright()
+img_aug.add_random_rotation(max_angle=25.)
+img_aug.add_random_blur(sigma_max=3.)
+
+# Define our network architecture:
+
+# Input is a 32x32 image with 3 color channels (red, green and blue)
+network = input_data(shape=[None, 32, 32, 3],
+                     data_preprocessing=img_prep,
+                     data_augmentation=img_aug)
+
+# Step 1: Convolution
+network = conv_2d(network, 32, 3, activation='relu')
+
+# Step 2: Max pooling
+network = max_pool_2d(network, 2)
+
+# Step 3: Convolution again
+network = conv_2d(network, 64, 3, activation='relu')
+
+# Step 4: Convolution yet again
+network = conv_2d(network, 64, 3, activation='relu')
+
+# Step 5: Max pooling again
+network = max_pool_2d(network, 2)
+
+# Step 6: Fully-connected 512 node neural network
+network = fully_connected(network, 512, activation='relu')
+
+# Step 7: Dropout - throw away some data randomly during training to prevent over-fitting
+network = dropout(network, 0.5)
+
+# Step 8: Fully-connected neural network with two outputs (0=isn't a bird, 1=is a bird) to make the final prediction
+network = fully_connected(network, 2, activation='softmax')
+
+# Tell tflearn how we want to train the network
+network = regression(network, optimizer='adam',
+                     loss='categorical_crossentropy',
+                     learning_rate=0.001)
+
+# Wrap the network in a model object
+model = tflearn.DNN(network, tensorboard_verbose=0, checkpoint_path='bird-classifier.tfl.ckpt')
+
+# Train it! We'll do 100 training passes and monitor it as it goes.
+model.fit(X, Y, n_epoch=100, shuffle=True, validation_set=(X_test, Y_test),
+          show_metric=True, batch_size=96,
+          snapshot_epoch=True,
+          run_id='bird-classifier')
+
+# Save model when training is complete to a file
+model.save("bird-classifier.tfl")
+print("Network trained and saved as bird-classifier.tfl!")
+```
+
+ 
+Jeśli trenujemy sieć z dobrą kartą graficzną z wystarczającą ilością pamięci RAM, zostanie to zrobione w mniej niż godzinę. Jeśli używamy zwykłego CPU, może to zająć dużo więcej czasu.
+
+W miarę treningu dokładność wzrasta. Po pierwszym przejściu ok. 75,4% dokładności. Po 10 przejściach był to poziom ok. 91,7%. Po około 50 cyklach dokłądność osiągnęła poziom 95,5% dokłądności. Dodatkowe szkolenie nie przynosiło znaczących popraw. Teraz nasz program potrafi teraz rozpoznawać ptaki na obrazach!
 
 
 # TODO
