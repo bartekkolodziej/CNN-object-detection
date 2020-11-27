@@ -11,7 +11,7 @@ from tflearn.data_augmentation import ImageAugmentation
 import pickle
 
 # Load the data set
-X, Y, X_test, Y_test = pickle.load(open("full_dataset.pkl", "rb"))
+X, Y, X_test, Y_test = pickle.load(open("batches/my_file.pkl", "rb"))
 
 # Shuffle the data
 X, Y = shuffle(X, Y)
