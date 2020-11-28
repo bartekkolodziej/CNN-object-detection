@@ -22,13 +22,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d13bc9c8-f685-4b2d-bc4c-e46e2f0af0cd" name="Default Changelist" comment="dodane 2 skrypty pythona, pare zmian w sprawozdaniu, (trzeba bazy danych z uploadować?)">
-      <change afterPath="$PROJECT_DIR$/.idea/markdown-navigator-enh.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/markdown-navigator.xml" afterDir="false" />
+    <list default="true" id="d13bc9c8-f685-4b2d-bc4c-e46e2f0af0cd" name="Default Changelist" comment="refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Konwolucyjne sieci neuronowe.html" beforeDir="false" afterPath="$PROJECT_DIR$/Konwolucyjne sieci neuronowe.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Konwolucyjne sieci neuronowe.md" beforeDir="false" afterPath="$PROJECT_DIR$/Konwolucyjne sieci neuronowe.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modelTraining.py" beforeDir="false" afterPath="$PROJECT_DIR$/modelTraining.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +137,8 @@
       <workItem from="1606478656196" duration="5952000" />
       <workItem from="1606502971252" duration="3329000" />
       <workItem from="1606506387117" duration="89000" />
-      <workItem from="1606506487074" duration="1994000" />
+      <workItem from="1606506487074" duration="2138000" />
+      <workItem from="1606508759782" duration="37000" />
     </task>
     <task id="LOCAL-00001" summary="Nowe rzeczy, nie wiem czy nie za długie to sprawko. Jeśli tak to trzeba skrócić/przeredagować">
       <created>1606413355191</created>
@@ -172,7 +168,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606480495681</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="refactoring">
+      <created>1606508572204</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1606508572204</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -195,7 +198,8 @@
     <MESSAGE value="nowe" />
     <MESSAGE value="prawie koniec" />
     <MESSAGE value="dodane 2 skrypty pythona, pare zmian w sprawozdaniu, (trzeba bazy danych z uploadować?)" />
-    <option name="LAST_COMMIT_MESSAGE" value="dodane 2 skrypty pythona, pare zmian w sprawozdaniu, (trzeba bazy danych z uploadować?)" />
+    <MESSAGE value="refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring" />
   </component>
   <component name="WindowStateProjectService">
     <state x="395" y="91" key="#Inspections" timestamp="1606479003262">
@@ -214,10 +218,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="277" y="57" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1606506574947" />
-    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1606480534273">
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2" timestamp="1606508633084">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1606480534273" />
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1606508633084" />
     <state x="586" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1606416178809">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
